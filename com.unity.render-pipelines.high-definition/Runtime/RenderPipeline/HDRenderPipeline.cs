@@ -1900,7 +1900,7 @@ namespace UnityEngine.Rendering.HighDefinition
                         }
 
 
-                        // Execute render request graph, in reverse order
+                        // Execute render request graph
                         for (int i = 0; i < renderRequestIndicesToRender.Count; ++i)
                         {
                             bool isLast = i == renderRequestIndicesToRender.Count - 1;
