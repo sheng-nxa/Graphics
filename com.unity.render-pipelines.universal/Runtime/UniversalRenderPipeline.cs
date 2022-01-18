@@ -881,6 +881,7 @@ namespace UnityEngine.Rendering.Universal
 
             // Convert the upscaling filter selection from the pipeline asset into an image upscaling filter
             cameraData.upscalingFilter = ResolveUpscalingFilterSelection(new Vector2(cameraData.pixelWidth, cameraData.pixelHeight), cameraData.renderScale, settings.upscalingFilter);
+            cameraData.casSharpness = settings.casSharpness;
 
 #if ENABLE_VR && ENABLE_XR_MODULE
             cameraData.xr = m_XRSystem.emptyPass;
@@ -1353,6 +1354,13 @@ namespace UnityEngine.Rendering.Universal
                 case UpscalingFilterSelection.Point:
                 {
                     filter = ImageUpscalingFilter.Point;
+
+                    break;
+                }
+
+                case UpscalingFilterSelection.CasUpsampling:
+                {
+                    filter = ImageUpscalingFilter.CasUpsampling;
 
                     break;
                 }
