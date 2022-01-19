@@ -105,6 +105,9 @@ namespace UnityEngine.Rendering.HighDefinition
         {
             displayName = "Path Tracing (Preview)";
         }
+
+        [Tooltip("If camera is moving, path tracer is paused. This parameter is not necessary, should be default behaviour. Meanwhile I keep it for showcase purposes.")]
+        public BoolParameter hackerMode = new BoolParameter(false);
     }
 
     public partial class HDRenderPipeline
@@ -236,6 +239,17 @@ namespace UnityEngine.Rendering.HighDefinition
             }
         }
 
+        bool IsCameraMoving(HDCamera hdCamera)
+        {
+            if (hdCamera.mainViewConstants.nonJitteredViewProjMatrix != (hdCamera.mainViewConstants.prevViewProjMatrix))
+            {
+                ResetPathTracing(hdCamera);
+                return true;
+            }
+            else
+                return false;
+        }
+
 #if UNITY_EDITOR
 
         private void OnSceneEdit()
@@ -325,9 +339,9 @@ namespace UnityEngine.Rendering.HighDefinition
             }
 
             // Check camera matrix dirtiness
-            if (hdCamera.mainViewConstants.nonJitteredViewProjMatrix != (hdCamera.mainViewConstants.prevViewProjMatrix))
+            if (IsCameraMoving(hdCamera))
             {
-                return ResetPathTracing(camID, camData);
+                return camData;
             }
 
             // If nothing but the camera has changed, re-render the sky texture

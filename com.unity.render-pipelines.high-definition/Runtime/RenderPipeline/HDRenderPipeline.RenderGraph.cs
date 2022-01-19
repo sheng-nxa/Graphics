@@ -128,7 +128,23 @@ namespace UnityEngine.Rendering.HighDefinition
                     colorBuffer = RenderDebugViewMaterial(m_RenderGraph, cullingResults, hdCamera, gpuLightListOutput, prepassOutput.dbuffer, prepassOutput.gbuffer, prepassOutput.depthBuffer, vtFeedbackBuffer);
                     colorBuffer = ResolveMSAAColor(m_RenderGraph, hdCamera, colorBuffer);
                 }
-                else if (hdCamera.frameSettings.IsEnabled(FrameSettingsField.RayTracing) && hdCamera.volumeStack.GetComponent<PathTracing>().enable.value && hdCamera.camera.cameraType != CameraType.Preview && GetRayTracingState() && GetRayTracingClusterState())
+                else if (hdCamera.frameSettings.IsEnabled(FrameSettingsField.RayTracing) && hdCamera.volumeStack.GetComponent<PathTracing>().enable.value && hdCamera.camera.cameraType != CameraType.Preview && GetRayTracingState() && GetRayTracingClusterState() && !IsCameraMoving(hdCamera) && m_PathTracing.hackerMode.value)
+                {
+                    Debug.Log("vienas");
+                    if (hdCamera.viewCount == 1)
+                    {
+                        colorBuffer = RenderPathTracing(m_RenderGraph, hdCamera, colorBuffer);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Path Tracing is not supported with XR single-pass rendering.");
+                    }
+
+#if ENABLE_VIRTUALTEXTURES
+                    resolveVirtualTextureFeedback = false;
+#endif
+                }
+                else if (hdCamera.frameSettings.IsEnabled(FrameSettingsField.RayTracing) && hdCamera.volumeStack.GetComponent<PathTracing>().enable.value && hdCamera.camera.cameraType != CameraType.Preview && GetRayTracingState() && GetRayTracingClusterState() && !m_PathTracing.hackerMode.value)
                 {
                     //// We only request the light cluster if we are gonna use it for debug mode
                     //if (FullScreenDebugMode.LightCluster == m_CurrentDebugDisplaySettings.data.fullScreenDebugMode && GetRayTracingClusterState())
@@ -136,7 +152,7 @@ namespace UnityEngine.Rendering.HighDefinition
                     //    HDRaytracingLightCluster lightCluster = RequestLightCluster();
                     //    lightCluster.EvaluateClusterDebugView(cmd, hdCamera);
                     //}
-
+                    Debug.Log("du");
                     if (hdCamera.viewCount == 1)
                     {
                         colorBuffer = RenderPathTracing(m_RenderGraph, hdCamera, colorBuffer);
